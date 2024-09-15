@@ -31,7 +31,7 @@ Shortened assembly instructions:
 6. Attach electronics
 7. Attach upper platform
 
-#### **For an actual build guide, go to [Assembly.md](./Assembly.md)**
+#### **For an actual build guide, go to [Assembly.md](./assembly.md)**
 
 Here is a simple schematic for how the electronics are wired:
 
