@@ -3,7 +3,7 @@
 
 # Contents
 * [Hardware](#hardware)
-    * [Assembly Instructions & Diagrams](#assembly)
+    * [Assembly Instructions & Diagrams](#assembly.md)
     * [Photos](#photos)
 * [Uploading Programs](#uploading-programs)
 * [Software](#software-documentation)
@@ -31,7 +31,7 @@ Shortened assembly instructions:
 6. Attach electronics
 7. Attach upper platform
 
-#### **For an actual build guide, go to [Assembly.md](./assembly)**
+#### **For an actual build guide, go to [Assembly.md](./assembly.md)**
 
 Here is a simple schematic for how the electronics are wired:
 
@@ -48,7 +48,7 @@ Here is a simple schematic for how the electronics are wired:
 
 # Uploading Programs
 
-Make sure you have gone through the [Raspberry Pi Setup](./assembly#jetson-nano-setup) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
+Make sure you have gone through the [Raspberry Pi Setup](./assembly.md#jetson-nano-setup) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
 
 ***
 
