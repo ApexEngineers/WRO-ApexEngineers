@@ -48,7 +48,7 @@ Here is a simple schematic for how the electronics are wired:
 
 # Uploading Programs
 
-Make sure you have gone through the [Raspberry Pi Setup](./ASSEMBLY.md#jetson-nano-setup) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
+Make sure you have gone through the [Raspberry Pi Setup](./assembly#jetson-nano-setup) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
 
 ***
 
