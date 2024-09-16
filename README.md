@@ -62,7 +62,7 @@ We used the Jetson Nano's existing operating system, which is Ubuntu 18.04 with 
 
 ## Programming Language
 
-All our code is in python (except the GIGABIT SPACE Control Panel and GIGABIT SPACE Randomizer, those are HTML/JS/CSS applications used for development).
+All our code is in python
 
 Dependencies:
 * Jetson-GPIO
@@ -105,18 +105,18 @@ See [CodeDocumentation.md](./CodeDocumentation.md).
 
 # LiPo Battery Safety Notice
 
-While LiPo batteries are the safest form of portable, affordable, high density energy storage, there are still precautions to be taken when working with them. Lithium is a highly volatile element, and will react with the water vapor in the air if exposed to it.
+Although LiPo batteries are one of the safest options for portable, affordable, high-density energy storage, certain precautions are still necessary when handling them. Lithium, being a highly reactive element, can react with moisture in the air if exposed.
 
-1. **Do not** puncture, deform, short, or heat LiPo batteries above 26° C (80° F)
-2. Store and charge LiPos in a *fireproof container* **away** from flammable materials and water
-3. **NEVER** charge a swollen or damaged battery (e.g. damaged leads, swelling of cells, puncture in wrapping)
-4. **NEVER** leave a charging battery unattended
-5. Only charge LiPo batteries with chargers *designed for LiPo batteries*
-6. Dropping a battery can cause sufficient damage to rupture a cell and cause shorts
-7. Overdischarging a LiPo battery can cause **permanent damage**
+Key precautions include:
+- Avoid puncturing, deforming, short-circuiting, or heating LiPo batteries above 26°C (80°F).
+- Store and charge LiPo batteries in fireproof containers, away from flammable materials and water.
+- NEVER charge a swollen or damaged battery (e.g., damaged wires, swelling, or punctured wrapping).
+- NEVER leave a charging battery unattended.
+- Only use chargers specifically designed for LiPo batteries.
+- Dropping a battery can cause damage, potentially rupturing a cell and leading to short circuits.
+- Overdischarging a LiPo battery can result in irreversible damage.
+- If a LiPo battery falls below its minimum voltage (as indicated in the manual or 3.3V per cell in series), it may suffer internal damage that isn’t immediately visible, which can later lead to swelling, rupture, or even a FIRE.
 
-If a LiPo battery goes below its minimum voltage (stated in the manual included or 3.3v multiplied by the amount of cells connected in series) it can cause **permanent internal damage**. This damage is not visible until after further use, when it can swell, or potentially burst and **cause a FIRE**.
+Always review the safety guidelines and instructions provided with LiPo batteries before use.
 
-**Read all safety notes and instructions included with LiPo batteries before use.**
-
-### For a more detailed LiPo safety manual there is one on [HobbyWing](https://hobbyking.com/en_us/blog/lipo-battery-safety-101-a-guide)
+### For a more detailed LiPo safety manual there is one on [Safety manual for LiPo Battery](https://www.ehs.washington.edu/system/files/resources/lithium-battery-safety.pdf)
