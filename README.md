@@ -23,7 +23,7 @@
 ## ASSEMBLY
 
 Shortened assembly instructions:
-1. Print 3D models
+1. Print 3D parts
 2. Assemble rear axle
 3. Solder electronics
 4. Assemble steering mechanism
@@ -48,7 +48,7 @@ Here is a simple schematic for how the electronics are wired:
 
 # Uploading Programs
 
-Make sure you have gone through the [Jetson Nano setup](./ASSEMBLY.md#jetson-nano-setup) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
+Make sure you have gone through the [Raspberry Pi Setup](./ASSEMBLY.md#jetson-nano-setup) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
 
 ***
 
