@@ -56,7 +56,7 @@ Make sure you have gone through the [Raspberry Pi Setup](./assembly.md#jetson-na
 
 ## Operating System
 
-We used the Jetson Nano's existing operating system, which is Ubuntu 18.04 with Jetpack. It has been changed to text-only mode to remove the unnecessary GUI. We also added a startup script ([see "Board Setup" in ASSEMBLY.md](./ASSEMBLY.md#board-setup-sshfs-and-static-ip)) to run the program on startup, which waits for a button press before running the program.
+We used the Jetson Nano's existing operating system, which is Ubuntu 18.04 with Jetpack. It has been changed to text-only mode to remove the unnecessary GUI. We also added a startup script ([see "Board Setup" in ASSEMBLY.md](./assembly.md#board-setup-sshfs-and-static-ip)) to run the program on startup, which waits for a button press before running the program.
 
 ***
 
