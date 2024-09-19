@@ -4,9 +4,9 @@
 
 # Build Guide
 
-This is the build guide for WRO Future Engineers team GIGABIT SPACE 2023 solution - GigaBot. It is segmented into ***TBD*** main steps, with more detailed steps within. It assumes you have necessary tools and miscellaneous materials including but not limited to: M2.5, M3 driver bits; a 3D printer; a soldering iron; 20-24 gauge wire; and M2.5, M3 flat/countersunk screws.
+This is the build guide for WRO Future Engineers team EARTH ALLIES 2024 solution - ApexBot. It assumes you have necessary tools and miscellaneous materials including but not limited to: M2.5, M3 driver bits; a 3D printer; a soldering iron; 20-24 gauge wire; and M2.5, M3 flat/countersunk screws.
 
-Below is a more-or-less detailed step-by-step guide to recreate GigaBot.
+Below is a more-or-less detailed step-by-step guide to recreate ApexBot.
 
 ***
 
@@ -14,7 +14,7 @@ Below is a more-or-less detailed step-by-step guide to recreate GigaBot.
 
 * [Parts List](#parts-list)
 * [Chassis Assembly](#chassis-assembly)
-* [Jetson Nano Setup](#jetson-nano-setup)
+* [Raspberry Pi Setup](#raspberry-pi-setup)
     * [Board Setup, SSHFS, Static IP](#board-setup-sshfs--static-ip)
     * [Enable GPIO & I2C](#enable-gpio-and-i2c)
     * [Install Packages](#package-installation)
@@ -25,19 +25,13 @@ Below is a more-or-less detailed step-by-step guide to recreate GigaBot.
 
 ## Parts List
 
-
-* [ Jetson Nano 4GB Developer Kit](https://www.amazon.in/NVIDIA-945134500000000-Jetson-Nano/dp/B07PZHBDKT/ref=asc_df_B07PZHBDKT/?tag=googleshopdes-21&linkCode=df0&hvadid=397083170813&hvpos=&hvnetw=g&hvrand=17834902022474069661&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9181926&hvtargid=pla-736379876326&psc=1&ext_vrnc=hi)
-* 2x [Arducam Raspberry Pi Official Camera Module V2, with 8 Megapixel IMX219 Wide Angle 175 Degree Replacement](https://www.amazon.in/LEEKWI-Raspberry-Camera-Module-Megapixel/dp/B0B5WDPLXW/ref=sr_1_1?keywords=rpi+cam+v2&qid=1695919486&sr=8-1)
-* [Intel AX201 WiFi 6 BT 5.1 M.2 2230 with 10in RP-SMA Antenna](https://www.amazon.in/RCC-AX201NGW-Module-Bluetooth-Network/dp/B08131CXHZ) (not required but helpful)
-* [Original HobbyWing QuicRun 1060 60A Brushed Electronic Speed ​​Controller](https://robu.in/product/original-hobbywing-quicrun-1625-60a-brushed-electronic-speed-%E2%80%8B%E2%80%8Bcontroller/?gclid=CjwKCAjwyNSoBhA9EiwA5aYlb_xb1pOc5OmoE8hFzLpjYF8EszvWhPInhuI8OJLzJ9mVmAkoGM8_-RoChv8QAvD_BwE)
-* [HobbyWing Brushed 55t Motor (55T)](https://www.flipkart.com/lyla-540-35t-brushed-motor-wp-1060-rtr-60a-esc-rc4wd-d90-1-10-rc-car-electronic-components-hobby-kit/p/itmf99bf8fae0f9b?pid=EHKGNX3SUQMFVPTM&lid=LSTEHKGNX3SUQMFVPTMEFCTUI&marketplace=FLIPKART&cmpid=content_electronic-hobby-kit_8965229628_gmc)
-* [MG996R Servo](https://robu.in/product/towerpro-mg996r-digital-high-torque-servo-motor/?gclid=CjwKCAjwyNSoBhA9EiwA5aYlb6geMjc8tdLp4JpjM6ChuxiDMqeowtN2mbboQdNtqbLp7cWhDHQzNhoCCxkQAvD_BwE)
-* A LiPo balance charger with XT-60 connector, rated for 3S
-* [Bonka Power 11.1v 2200mah Lipo battery](https://www.electronicscomp.com/bonka-11.1v-2200mah-35c-3s-lipo-battery?gclid=CjwKCAjwyNSoBhA9EiwA5aYlb5L4m1NkhoOKjTOF6tmf10qY1autVxF3b2DhmZAnl89ZcQIIB-Hb8BoComQQAvD_BwE)
-* 2x [DC-DC 5A Adjustable Buck Converter](https://robu.in/product/xl4005-dc-dc-5-32v-adjustable-step-down-5a-buck-power-supply-module/?gclid=CjwKCAjwyNSoBhA9EiwA5aYlb9LUmcIdBRj49ZHu5DseS0lXCwSZFyTztnzszvZfipi4UHHy7j7nuRoCjCoQAvD_BwE)
-* [Male 5.5mm DC Barrel Connectors]
-* [Male and Female XT60 Connectors](https://robu.in/product/xt60h-male-female-connector-pair-with-housing/?gclid=CjwKCAjwyNSoBhA9EiwA5aYlb36spsORR6mY5bdOZ919OJso-3ojDvyDCfMJYm5zNabIWrGiD5DNmhoCXY4QAvD_BwE)
-* [Normally Closed/Momentary On Push Button](https://robu.in/product/red-ds-316-10mm-lock-free-momentary-self-reset-small-push-button-switch/?gclid=CjwKCAjwyNSoBhA9EiwA5aYlbx7_yejxZOzbHwGbsDoJ8aB4PY14HtEr1IvFmg69gaSoR0Pq4DH1ShoCoPAQAvD_BwE) (size must match)
+* [Micro HDMI to HDMI](https://www.agarwalelectronics.com/product/micro-hdmi-to-hdmi-cable/)
+* 2x [Raspberry Pi 4 4GB](https://www.agarwalelectronics.com/product/raspberry-pi-4-4gb/)
+* 2x [L298 Motor Driver](https://www.agarwalelectronics.com/product/l298n-motor-driver-board/)
+* [5MP Camera](https://www.agarwalelectronics.com/product/5mp-camera-for-raspberry-pi/)
+* 2x [HC SR04 - Ultrasonic Sensor](https://www.agarwalelectronics.com/product/hc-sr04-ultrasonic-sensor-4pin/)
+* 2x [64GB SD Card](https://www.amazon.in/s?k=64gb+sd+card%27&adgrpid=1326012629748396&hvadid=82876047563782&hvbmt=be&hvdev=c&hvlocphy=156979&hvnetw=o&hvqmt=e&hvtargid=kwd-82876677182464%3Aloc-90&hydadcr=24350_1971234&tag=msndeskstdin-21&ref=pd_sl_r3hr79sdn_e)
+* 4x [65mm Rubber](https://www.agarwalelectronics.com/product/bo-wheel-imported/)
 * 20-24 gauge wire
 * M3 nylon screws (6mm)
 * M3 nylon standoffs (6mm works best)
@@ -60,7 +54,7 @@ You will need (at least) the following tools:
 
 ## Chassis Assembly
 
-Sorry! We couldn't get to the assembly instructions in time! Print out the parts located in `/CAD Files/files`. in their given orientation (they have been oriented for the best print results) Most of the assembly should be fairly simple, and follow the pinout sheet linked below and connect to their corresponding pins on the other boards. Some holes may need to be drilled out to make screws fit.
+We got the respective 3D printed parts for our ApexBot. Print out the parts located in `/CAD Files/files` in their given orientation (they have been oriented for the best print results). Most of the assembly should be fairly simple, and follow the pinout sheet linked below and connect to their corresponding pins on the other boards. Some holes may need to be drilled out to make screws fit.
 
 
 [Jetson Nano pinout sheet](./Others/GPIO_PINOUT.xlsx)
@@ -76,7 +70,7 @@ Follow the quick start guide for the ESC to solder the motor connections. Brief 
 
 ***
 
-## Jetson Nano Setup
+## Raspberry Pi Setup
 
 ### Board Setup, SSHFS, & Static IP
 
