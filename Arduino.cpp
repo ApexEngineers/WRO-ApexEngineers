@@ -2,7 +2,6 @@
 #include <Servo.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
-#include <Ultrasonic.h>
 
 // Servo and Motor setup
 Servo steering;
@@ -16,9 +15,12 @@ bool parking_mode = false;
 // MPU6050 Setup (for direction and lap counting)
 Adafruit_MPU6050 mpu;
 float initial_heading = 0;
+float current_heading = 0;
 
-// Ultrasonic Sensor Setup (for parking distance)
-Ultrasonic ultrasonic(7, 8);  // Trigger pin 7, Echo pin 8
+// TCS3200 Color Sensor Setup (for detecting blue and orange lines)
+int s2 = 4; // S2 pin of TCS3200
+int s3 = 5; // S3 pin of TCS3200
+int outPin = 6; // Output pin of TCS3200
 
 // Movement variables
 int speed = 150;  // Speed for the DC motor
@@ -55,6 +57,11 @@ void setup() {
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
   initial_heading = calculateHeading(a);
+
+  // TCS3200 Color sensor setup
+  pinMode(s2, OUTPUT);
+  pinMode(s3, OUTPUT);
+  pinMode(outPin, INPUT);
 }
 
 void loop() {
@@ -119,6 +126,9 @@ void loop() {
         break;
     }
   }
+
+  // Update lap count
+  updateLapCount();
 }
 
 // Parse the command string
@@ -129,32 +139,83 @@ void parseCommand(String command, float &displacement, float &distance) {
   distance = command.substring(secondSpace + 1).toFloat();
 }
 
-// Turn Left Function for Color (Square Path)
+// Turn Left Function for Color (Blue Detected)
 void turnLeftColor() {
-  steering.write(45);  // Example left turn angle for color detection
-  moveForward(10.0);   // Move forward a short distance for color detection
-  // Add logic to adjust duration or stop based on sensor input if needed
+  if (detectColor() == "BLUE") {
+    steering.write(45);  // Example left turn angle for blue color
+    moveForward(10.0);   // Move forward a short distance
+  }
 }
 
-// Turn Right Function for Color (Square Path)
+// Turn Right Function for Color (Orange Detected)
 void turnRightColor() {
-  steering.write(135);  // Example right turn angle for color detection
-  moveForward(10.0);    // Move forward a short distance for color detection
-  // Add logic to adjust duration or stop based on sensor input if needed
+  if (detectColor() == "ORANGE") {
+    steering.write(135);  // Example right turn angle for orange color
+    moveForward(10.0);    // Move forward a short distance
+  }
 }
 
-// Turn Left Function for Obstacles
+// Detect Color using TCS3200 Color Sensor
+String detectColor() {
+  int redValue = readColorSensor(); // Read the color sensor values
+  if (redValue > thresholdValueForBlue) {
+    return "BLUE";
+  } else if (redValue < thresholdValueForOrange) {
+    return "ORANGE";
+  }
+  return "NONE";
+}
+
+// Read the color sensor and return color intensity
+int readColorSensor() {
+  // Set S2 and S3 for blue color detection
+  digitalWrite(s2, LOW);
+  digitalWrite(s3, LOW);
+  delay(100);
+  int blue = pulseIn(outPin, HIGH); // Measure blue color intensity
+
+  // Set S2 and S3 for orange color detection
+  digitalWrite(s2, HIGH);
+  digitalWrite(s3, HIGH);
+  delay(100);
+  int orange = pulseIn(outPin, HIGH); // Measure orange color intensity
+
+  // Return the higher value between blue and orange for comparison
+  return (blue > orange) ? blue : orange;
+}
+
+// Turn Left Function for Obstacles using Camera
 void turnLeftObstacle() {
-  steering.write(45);  // Example left turn angle for obstacle avoidance
-  moveForward(5.0);    // Move forward a short distance to avoid the obstacle
-  // Add logic to adjust duration or stop based on sensor input if needed
+  float distance, angle;
+  getCameraData(distance, angle); // Get distance and angle from the camera
+
+  if (distance < 10) { // If too close to the obstacle
+    steering.write(30);  // Sharp left turn to avoid the obstacle
+    moveForward(0.0); // Stop to avoid collision
+  } else if (angle < 0) { // If the obstacle is on the right side
+    steering.write(90 + abs(angle));  // Adjust to the left based on angle
+    moveForward(5.0); // Move forward cautiously
+  } else { // Clear path
+    steering.write(90); // Go straight
+    moveForward(5.0); // Move forward
+  }
 }
 
-// Turn Right Function for Obstacles
+// Turn Right Function for Obstacles using Camera
 void turnRightObstacle() {
-  steering.write(135);  // Example right turn angle for obstacle avoidance
-  moveForward(5.0);     // Move forward a short distance to avoid the obstacle
-  // Add logic to adjust duration or stop based on sensor input if needed
+  float distance, angle;
+  getCameraData(distance, angle); // Get distance and angle from the camera
+
+  if (distance < 10) { // If too close to the obstacle
+    steering.write(150);  // Sharp right turn to avoid the obstacle
+    moveForward(0.0); // Stop to avoid collision
+  } else if (angle > 0) { // If the obstacle is on the left side
+    steering.write(90 - abs(angle));  // Adjust to the right based on angle
+    moveForward(5.0); // Move forward cautiously
+  } else { // Clear path
+    steering.write(90); // Go straight
+    moveForward(5.0); // Move forward
+  }
 }
 
 // Motor Control Functions
@@ -166,12 +227,7 @@ void moveForward(float distance) {
 }
 
 void initiateParking() {
-  int distance = ultrasonic.read();
-  if (distance < 2) {
-    stopMotor();  // Stop the vehicle
-  } else {
-    moveForward(0.0);  // Keep moving slowly if no obstacle
-  }
+  // This function is left empty; implement parking logic as needed
 }
 
 void stopMotor() {
@@ -179,12 +235,24 @@ void stopMotor() {
   analogWrite(motorPin, 0);
 }
 
-// Function to calculate heading (add implementation if needed)
-float calculateHeading(sensors_event_t &a) {
-  float heading = atan2(a.acceleration.y, a.acceleration.x) * 180 / PI;
-  if (heading < 0) {
-    heading += 360;
+// Function to update lap count using MPU6050 (Magnetometer)
+void updateLapCount() {
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+  current_heading = calculateHeading(a);
+
+  // If the current heading is within a certain range of the initial heading, increase lap count
+  if (abs(current_heading - initial_heading) < 10) {
+    lap_count++;
+    Serial.print("Lap Count: ");
+    Serial.println(lap_count);
   }
-  return heading;
+}
+
+// Calculate heading using accelerometer data
+float calculateHeading(sensors_event_t &a) {
+  // Implement heading calculation based on accelerometer data
+  // This is a placeholder function; the actual implementation will depend on your specific needs
+  return atan2(a.acceleration.y, a.acceleration.x) * 180 / PI;
 }
 
