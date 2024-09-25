@@ -1,6 +1,7 @@
 import cv2
 import serial
 import time
+import numpy as np
 
 # Setup the serial communication with Arduino
 arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
@@ -18,9 +19,8 @@ pink_upper = (165, 255, 255)
 cap = cv2.VideoCapture(0)
 
 lap_count = 0
-color_count = 0
 
-def detect_color(frame):
+def detect_color_and_position(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     
     # Create masks for red, green, and pink
@@ -30,26 +30,43 @@ def detect_color(frame):
 
     # Check for red
     if cv2.countNonZero(mask_red) > 0:
-        return 'RED'
+        M = cv2.moments(mask_red)
+        if M['m00'] > 0:
+            cx_red = int(M['m10'] / M['m00'])
+            return 'RED', cx_red
     elif cv2.countNonZero(mask_green) > 0:
-        return 'GREEN'
+        M = cv2.moments(mask_green)
+        if M['m00'] > 0:
+            cx_green = int(M['m10'] / M['m00'])
+            return 'GREEN', cx_green
     elif cv2.countNonZero(mask_pink) > 0:
-        return 'PINK'
-    return None
+        return 'PINK', None
+    return None, None
+
+def calculate_angular_displacement(color_position, frame_width):
+    center_x = frame_width // 2
+    displacement = (color_position - center_x) / center_x  # Normalize displacement
+    return displacement
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    detected_color = detect_color(frame)
+    detected_color, color_position = detect_color_and_position(frame)
+
+    # Simulate getting distance from an ultrasonic sensor
+    distance = 50  # Placeholder for actual distance measurement
 
     if lap_count < 3:
-        # Send commands based on detected color
         if detected_color == 'RED':
-            arduino.write(b'RIGHT\n')  # Send right turn signal to Arduino
+            if color_position is not None:
+                displacement = calculate_angular_displacement(color_position, frame.shape[1])
+                arduino.write(f'RIGHT {displacement:.2f} {distance}\n'.encode())  # Send right turn signal with displacement and distance
         elif detected_color == 'GREEN':
-            arduino.write(b'LEFT\n')   # Send left turn signal to Arduino
+            if color_position is not None:
+                displacement = calculate_angular_displacement(color_position, frame.shape[1])
+                arduino.write(f'LEFT {displacement:.2f} {distance}\n'.encode())   # Send left turn signal with displacement and distance
     else:
         # If 3 laps completed, check for pink blocks to initiate parallel parking
         if detected_color == 'PINK':
@@ -64,4 +81,6 @@ while True:
 
 # Cleanup
 cap.release()
+cv2.destroyAllWindows()
+
 cv2.destroyAllWindows()
