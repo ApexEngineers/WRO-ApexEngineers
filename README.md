@@ -48,7 +48,7 @@ Here is a simple schematic for how the electronics are wired:
 
 # Uploading Programs
 
-Make sure you have gone through the [Raspberry Pi Setup](./assembly.md#jetson-nano-setup) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
+Make sure you have gone through the [Raspberry Pi Setup](./assembly.md#Raspberry-Pi-SetUp) steps and set your static IP, have some form of sshfs, and created the program directory. To upload the program, simply copy the contents of the "Program" into the remote directory. **Do not delete the previous directory; you will have to re-install packages!**
 
 ***
 
@@ -56,7 +56,7 @@ Make sure you have gone through the [Raspberry Pi Setup](./assembly.md#jetson-na
 
 ## Operating System
 
-We used the Jetson Nano's existing operating system, which is Ubuntu 18.04 with Jetpack. It has been changed to text-only mode to remove the unnecessary GUI. We also added a startup script ([see "Board Setup" in ASSEMBLY.md](./assembly.md#board-setup-sshfs-and-static-ip)) to run the program on startup, which waits for a button press before running the program.
+We used the Raspbian operating system, which is Raspberry Pi's official operating system. We also added a startup script ([see "Board Setup" in ASSEMBLY.md](./assembly.md#board-setup-sshfs-and-static-ip)) to run the program on startup, which waits for a button press before running the program.
 
 ***
 
@@ -65,8 +65,7 @@ We used the Jetson Nano's existing operating system, which is Ubuntu 18.04 with 
 All our code is in python
 
 Dependencies:
-* Jetson-GPIO
-* jetcam
+* Rapeberry Pi GPIO
 * numpy
 * cv2
 * adafruit-servokit
@@ -82,9 +81,6 @@ Dependencies:
 * threading
 
 The **entire** `Program` directory must be uploaded in order for the program to run. Ensure the `path` constant in `startup.py` is defined properly.
-
-Example:
-    `/home/mihir/Desktop/wro-repo-colab/Code_Main/Program/`
 
 ***
 
