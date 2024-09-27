@@ -25,6 +25,10 @@ int outPin = 6; // Output pin of TCS3200
 // Movement variables
 int speed = 150;  // Speed for the DC motor
 
+// Threshold values for color detection
+int thresholdValueForBlue = 200;   // You will need to adjust these values based on your sensor readings
+int thresholdValueForOrange = 100; // Adjust this based on testing
+
 // State variables
 enum State { IDLE, TURN_LEFT_COLOR, TURN_RIGHT_COLOR, TURN_LEFT_OBSTACLE, TURN_RIGHT_OBSTACLE, PARKING };
 State currentState = IDLE;
@@ -65,94 +69,42 @@ void setup() {
 }
 
 void loop() {
-  // Check for incoming commands from Raspberry Pi
-  if (Serial.available()) {
-    String command = Serial.readStringUntil('\n');
-    float displacement, distance;
+  // Lap counting
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+  current_heading = calculateHeading(a);
 
-    if (command.startsWith("LEFT_COLOR")) {
-      parseCommand(command, displacement, distance);
-      currentState = TURN_LEFT_COLOR;
-    } else if (command.startsWith("RIGHT_COLOR")) {
-      parseCommand(command, displacement, distance);
-      currentState = TURN_RIGHT_COLOR;
-    } else if (command.startsWith("LEFT_OBSTACLE")) {
-      parseCommand(command, displacement, distance);
-      currentState = TURN_LEFT_OBSTACLE;
-    } else if (command.startsWith("RIGHT_OBSTACLE")) {
-      parseCommand(command, displacement, distance);
-      currentState = TURN_RIGHT_OBSTACLE;
-    } else if (command == "PARK") {
-      parking_mode = true;
-      currentState = PARKING;
-    } else if (command == "STOP") {
-      stopMotor();
-      currentState = IDLE;  // Switch to IDLE state
-    }
+  if (isLapCompleted(current_heading)) {
+    lap_count++;
+    Serial.print("LAP ");
+    Serial.println(lap_count); // Send lap count to Raspberry Pi
   }
 
-  // State management
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-
-    switch (currentState) {
-      case TURN_LEFT_COLOR:
-        turnLeftColor();
-        currentState = IDLE;  // Return to IDLE state after turning
-        break;
-
-      case TURN_RIGHT_COLOR:
-        turnRightColor();
-        currentState = IDLE;  // Return to IDLE state after turning
-        break;
-
-      case TURN_LEFT_OBSTACLE:
-        turnLeftObstacle();
-        currentState = IDLE;  // Return to IDLE state after turning
-        break;
-
-      case TURN_RIGHT_OBSTACLE:
-        turnRightObstacle();
-        currentState = IDLE;  // Return to IDLE state after turning
-        break;
-
-      case PARKING:
-        initiateParking();
-        break;
-
-      case IDLE:
-        // Optionally perform other idle tasks here
-        break;
-    }
+  // Parking mode check
+  if (lap_count >= 3 && !parking_mode) {
+    initiateParking();
+    parking_mode = true;
   }
 
-  // Update lap count
-  updateLapCount();
-}
-
-// Parse the command string
-void parseCommand(String command, float &displacement, float &distance) {
-  int firstSpace = command.indexOf(' ');
-  int secondSpace = command.indexOf(' ', firstSpace + 1);
-  displacement = command.substring(firstSpace + 1, secondSpace).toFloat();
-  distance = command.substring(secondSpace + 1).toFloat();
+  // Example: detect colors and move based on detection
+  String detectedColor = detectColor();
+  if (detectedColor == "BLUE") {
+    turnLeftColor();
+  } else if (detectedColor == "ORANGE") {
+    turnRightColor();
+  }
 }
 
 // Turn Left Function for Color (Blue Detected)
 void turnLeftColor() {
-  if (detectColor() == "BLUE") {
-    steering.write(45);  // Example left turn angle for blue color
-    moveForward(10.0);   // Move forward a short distance
-  }
+  steering.write(45);  // Example left turn angle for blue color
+  moveForward(10.0);   // Move forward a short distance
 }
 
 // Turn Right Function for Color (Orange Detected)
 void turnRightColor() {
-  if (detectColor() == "ORANGE") {
-    steering.write(135);  // Example right turn angle for orange color
-    moveForward(10.0);    // Move forward a short distance
-  }
+  steering.write(135);  // Example right turn angle for orange color
+  moveForward(10.0);    // Move forward a short distance
 }
 
 // Detect Color using TCS3200 Color Sensor
@@ -184,41 +136,7 @@ int readColorSensor() {
   return (blue > orange) ? blue : orange;
 }
 
-// Turn Left Function for Obstacles using Camera
-void turnLeftObstacle() {
-  float distance, angle;
-  getCameraData(distance, angle); // Get distance and angle from the camera
-
-  if (distance < 10) { // If too close to the obstacle
-    steering.write(30);  // Sharp left turn to avoid the obstacle
-    moveForward(0.0); // Stop to avoid collision
-  } else if (angle < 0) { // If the obstacle is on the right side
-    steering.write(90 + abs(angle));  // Adjust to the left based on angle
-    moveForward(5.0); // Move forward cautiously
-  } else { // Clear path
-    steering.write(90); // Go straight
-    moveForward(5.0); // Move forward
-  }
-}
-
-// Turn Right Function for Obstacles using Camera
-void turnRightObstacle() {
-  float distance, angle;
-  getCameraData(distance, angle); // Get distance and angle from the camera
-
-  if (distance < 10) { // If too close to the obstacle
-    steering.write(150);  // Sharp right turn to avoid the obstacle
-    moveForward(0.0); // Stop to avoid collision
-  } else if (angle > 0) { // If the obstacle is on the left side
-    steering.write(90 - abs(angle));  // Adjust to the right based on angle
-    moveForward(5.0); // Move forward cautiously
-  } else { // Clear path
-    steering.write(90); // Go straight
-    moveForward(5.0); // Move forward
-  }
-}
-
-// Motor Control Functions
+// Move forward function
 void moveForward(float distance) {
   // Set motor direction and speed for forward movement
   digitalWrite(motorDirPin1, HIGH);
@@ -226,33 +144,22 @@ void moveForward(float distance) {
   analogWrite(motorPin, speed);
 }
 
-void initiateParking() {
-  // This function is left empty; implement parking logic as needed
-}
-
-void stopMotor() {
-  // Stop the motor by setting speed to 0
-  analogWrite(motorPin, 0);
-}
-
-// Function to update lap count using MPU6050 (Magnetometer)
-void updateLapCount() {
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  current_heading = calculateHeading(a);
-
-  // If the current heading is within a certain range of the initial heading, increase lap count
-  if (abs(current_heading - initial_heading) < 10) {
-    lap_count++;
-    Serial.print("Lap Count: ");
-    Serial.println(lap_count);
-  }
-}
-
-// Calculate heading using accelerometer data
+// Function to calculate heading using MPU6050
 float calculateHeading(sensors_event_t &a) {
   // Implement heading calculation based on accelerometer data
-  // This is a placeholder function; the actual implementation will depend on your specific needs
   return atan2(a.acceleration.y, a.acceleration.x) * 180 / PI;
 }
 
+// Lap completion check based on heading
+bool isLapCompleted(float current_heading) {
+  return abs(current_heading - initial_heading) >= 360;  // Adjust this condition based on your environment
+}
+
+// Parking logic
+void initiateParking() {
+  Serial.println("Parking Mode Initiated");
+  steering.write(90);  // Straight position for parking
+  moveForward(5.0);    // Move forward a short distance
+  steering.write(135); // Adjust for parallel parking (right turn)
+  moveForward(3.0);    // Complete parking procedure
+}
