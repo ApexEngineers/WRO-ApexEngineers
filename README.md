@@ -66,10 +66,14 @@ We used the Raspbian operating system, which is Raspberry Pi's official operatin
 Our code is in Python (for Raspberry PI) and C++ (for Arduino)
 
 Dependencies:
+
 In Raspberry Pi
+
 * numpy
 * cv2
+  
 In Arduino
+
 * Servo
 * wire
 
