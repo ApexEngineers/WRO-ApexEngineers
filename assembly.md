@@ -4,7 +4,7 @@
 
 # Build Guide
 
-This is the build guide for WRO Future Engineers team EARTH ALLIES 2024 solution - ApexBot. It assumes you have necessary tools and miscellaneous materials including but not limited to: M2.5, M3 driver bits; a 3D printer; a soldering iron; 20-24 gauge wire; and M2.5, M3 flat/countersunk screws.
+This is the build guide for WRO Future Engineers team EARTH ALLIES 2024 solution - ApexBot. It assumes you have necessary tools and miscellaneous materials including but not limited to: screw driver set; a 3D printer; a soldering iron; appropriate wires; drilling machine and the required drill bits; and M3, M4, M5 flat/countersunk screws.
 
 Below is a more-or-less detailed step-by-step guide to recreate ApexBot.
 
@@ -15,7 +15,7 @@ Below is a more-or-less detailed step-by-step guide to recreate ApexBot.
 * [Parts List](#parts-list)
 * [Chassis Assembly](#chassis-assembly)
 * [Raspberry Pi Setup](#raspberry-pi-setup)
-    * [Board Setup, SSHFS, Static IP](#board-setup-sshfs--static-ip)
+    * [Board Setup](#board-setup)
     * [Enable GPIO & I2C](#enable-gpio-and-i2c)
     * [Install Packages](#package-installation)
     * [Remove GUI, Autologin, & Run-on-startup](#text-only-auto-login--run-on-startup)
@@ -72,7 +72,7 @@ Follow the quick start guide for the ESC to solder the motor connections. Brief 
 
 ## Raspberry Pi Setup
 
-### Board Setup, SSHFS, & Static IP
+### Board Setup
 
 Visit [Nvidia](https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit)'s setup and tutorial page to begin setting up the Jetson Nano 4GB. 
 
