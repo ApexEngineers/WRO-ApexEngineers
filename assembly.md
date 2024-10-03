@@ -54,17 +54,19 @@ You will need (at least) the following tools:
 
 ## Chassis Assembly
 
-We got the respective 3D printed parts for our ApexBot. Print out the parts located in `/CAD Files/files` in their given orientation (they have been oriented for the best print results). Most of the assembly should be fairly simple, and follow the pinout sheet linked below and connect to their corresponding pins on the other boards. Some holes may need to be drilled out to make screws fit.
+We got the respective 3D printed parts for our ApexBot. Print out the parts located in `/CAD Files/3D` in their given orientation (they have been oriented for the best print results). The main chassis of the robot is made from **dheuhduehdu** and a angle grinder and drilling machine was used to create the frame.
+
+*The ______ is available in the 'CAD Files/________'*
 
 
-[Jetson Nano pinout sheet](./Others/GPIO_PINOUT.xlsx)
+## Wiring 
 
-*Note: For I2C connectors, Yellow should be SCL and blue should be SDA; there is no set standard.*
+Below is the schematic diagram for the ApexBot. 
+
+![image](https://github.com/user-attachments/assets/d1410b12-4917-4785-b478-b5b2e6da40fe)
 
 
-For soldering, we recommend soldering the regulators to their own connectors **in parallel**, and using that as a pass-through to the ESC. The female connectors should be used on the ESC inputs and regulator input, and the male connector on the pass through end of the regulator wires. See the diagram below.
-
-Follow the quick start guide for the ESC to solder the motor connections. Brief summary: solder A, B, and C connectors to the motor (or supplied connectors). Ensure the sensor wire is secure before mounting motor and ESC.
+We have soldered the wires for ease in connections
 
 **WARNING:** DO NOT CONNECT THE ESC 3-PIN DIRECTLY TO THE SERVO DRIVER! IT WILL BACKDRIVE THE REGULATOR AND BREAK IT! ONLY CONNECT THE PWM PIN (white)!
 
