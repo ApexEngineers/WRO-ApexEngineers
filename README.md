@@ -35,7 +35,8 @@ Shortened assembly instructions:
 
 Here is a simple schematic for how the electronics are wired:
 
-![Wiring schematic](./Schematics/Schematic.png)
+
+![image](https://github.com/user-attachments/assets/723035cc-10ee-4c7d-9646-833954e1d946)
 
 ## Photos
 |                                |                                  |
