@@ -76,13 +76,7 @@ We have soldered the wires for ease in connections
 
 ### Board Setup
 
-Visit [Nvidia](https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit)'s setup and tutorial page to begin setting up the Jetson Nano 4GB. 
 
-After setting up the board, log into your Jetson Nano. Keep PuTTY open, as it will be used for the rest of the setup process. Also keep the IP. For remote file transfer, install sshfs (linux only), or use [sshfs-win](https://github.com/winfsp/sshfs-win) from WinFsp. Follow instructions to mount the Jetson Nano to a network drive. Now upload all contents of the `/Program/` folder into a new folder on the Jetson Nano. Remember the directory of the folder, this will be used later.
-
-*This method should be used to upload programs.*
-
-Make sure a static IP is set to the board to make SSH and file transfer easier. Go to your router settings and [assign a DHCP reservation (PCmag)](https://www.pcmag.com/how-to/how-to-set-up-a-static-ip-address) (or a straight static IP) to your Jetson Nano. Save this IP in your PuTTY settings and SSHFS mounting.
 
 ### Enable GPIO and I2C
 
