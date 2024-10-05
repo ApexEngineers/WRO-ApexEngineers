@@ -62,11 +62,11 @@ Here is a simple schematic for how the electronics are wired:
  Our team is made up of talented young individuals with diverse interests and achievements. We are a collaborative and determined team, eager to inspire others with our journey.
  
  ## Coach - Aditya Vynatheya
-    As a maker, I pride myself on being able to take an idea and turn it into a tangible reality. With skills encompassing various disciplines, from programming to woodworking, I bring versatility to the creative process.
+As a maker, I pride myself on being able to take an idea and turn it into a tangible reality. With skills encompassing various disciplines, from programming to woodworking, I bring versatility to the creative process.
 
     
  ## Abhiram Alluri 
- 	Abhiram Alluri, aged 16, is a passionate individual who loves cricket, software, and physics. He recently did an internship at IIIT under Anuradha Ma’am, where he learned about technology. Abhiram has achieved remarkable success. In 2022, he won first place in the Pravaha Hackathon, beating participants from Russia. He also excelled in robotics, winning the Connect Award at FTC 2024 and earning a chance to represent his team in Australia.
+Abhiram Alluri, aged 16, is a passionate individual who loves cricket, software, and physics. He recently did an internship at IIIT under Anuradha Ma’am, where he learned about technology. Abhiram has achieved remarkable success. In 2022, he won first place in the Pravaha Hackathon, beating participants from Russia. He also excelled in robotics, winning the Connect Award at FTC 2024 and earning a chance to represent his team in Australia.
 
  ## Akhila Alluri
  Akhila Alluri, aged 14, is interested in languages, hardware, and table tennis. She has achieved success both in sports and technology. Akhila placed second in a team table tennis competition at the state level. She also came in second in the FLL (First Lego League) competition in South India, demonstrating her skills in robotics. Akhila´s curiosity extends to languages and hardware as well.
