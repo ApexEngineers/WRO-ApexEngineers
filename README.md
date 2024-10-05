@@ -3,14 +3,14 @@
 
 # Contents
 * [Hardware](#hardware)
-    * [Assembly Instructions & Diagrams](#assembly.md)
-    * [Photos](#photos)
-* [Uploading Programs](#uploading-programs)
+    * [Assembly Instructions & Diagrams](#assembly-instructions)
+    * [Schematic Diagram](#schematic-diagram)
+    * [Photos of the Robot](#photos-of-the-robot)
+* [The Team](#the-team)
 * [Software](#software-documentation)
     * [Operating System](#operating-system)
     * [Programming Language](#programming-language)
     * [Code Documentation](#code-documentation)
-* [Team Photos](#team-photos)
 * [Demonstrations](#demonstration-video)
 * [LiPo Battery Safety Notice](#lipo-battery-safety-notice)
 
@@ -19,7 +19,7 @@
 ***
 # HARDWARE ASSEMBLY  
 
-## Assembly Instructions &  Diagrams
+## Assembly Instructions
 Here’s a detailed overview of the hardware assembly process for your robotics project, following the shortened instructions. This guide includes steps such as preparing the 3D parts, assembling the electronics, and ensuring proper mounting. Please refer to [Assembly.md](./assembly.md) for a more comprehensive guide, but here’s the core outline:
 
 1. **Print 3D Parts**  
@@ -104,6 +104,8 @@ The project utilizes two primary programming languages:
    - `Wire`: Used for I2C communication between various sensors and the Arduino.
 
 Make sure all dependencies are installed correctly for the system to function seamlessly.
+
+# Demonstration Video
 
 # LiPo Battery Safety Notice
 LiPo (Lithium Polymer) batteries are widely used in robotics projects due to their high energy density and relatively low cost. However, they require careful handling to avoid dangerous situations, such as fires. Here are some essential precautions to follow when handling LiPo batteries:
