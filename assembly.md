@@ -16,10 +16,6 @@ Below is a more-or-less detailed step-by-step guide to recreate ApexBot.
 * [Chassis Assembly](#chassis-assembly)
 * [Raspberry Pi Setup](#raspberry-pi-setup)
     * [Board Setup](#board-setup)
-    * [Enable GPIO & I2C](#enable-gpio-and-i2c)
-    * [Install Packages](#package-installation)
-    * [Remove GUI, Autologin, & Run-on-startup](#text-only-auto-login--run-on-startup)
-    * [Camera Calibration](#camera-calibration)
 
 ***
 
@@ -54,9 +50,9 @@ You will need (at least) the following tools:
 
 ## Chassis Assembly
 
-We got the respective 3D printed parts for our ApexBot. Print out the parts located in `/CAD Files/3D` in their given orientation (they have been oriented for the best print results). The main chassis of the robot is made from **dheuhduehdu** and a angle grinder and drilling machine was used to create the frame.
+We got the respective 3D printed parts for our ApexBot. Print out the parts located in `/CAD Files/3D` in their given orientation (they have been oriented for the best print results). The main chassis of the robot is made from rigid PVC sheets and a angle grinder and drilling machine was used to create the frame.
 
-*The ______ is available in the 'CAD Files/________'*
+*The diagram for the chassis is available in the 'CAD Files*
 
 
 ## Wiring 
@@ -68,70 +64,140 @@ Below is the schematic diagram for the ApexBot.
 
 We have soldered the wires for ease in connections
 
-**WARNING:** DO NOT CONNECT THE ESC 3-PIN DIRECTLY TO THE SERVO DRIVER! IT WILL BACKDRIVE THE REGULATOR AND BREAK IT! ONLY CONNECT THE PWM PIN (white)!
 
 ***
 
-## Raspberry Pi Setup
+# Raspberry Pi Setup
 
-### Board Setup
+## Board Setup
+To install **Raspberry Pi OS** and configure your display setup, along with installing **NumPy** and **OpenCV (cv2)**, follow these comprehensive steps. This guide walks you through the entire process from setting up the OS to configuring the display and installing important libraries like NumPy and OpenCV, which are commonly used in computer vision projects.
 
+### 1. **Hardware Preparation**
+Start by gathering the necessary components. You'll need:
+- Raspberry Pi board
+- MicroSD card (16GB+ recommended)
+- Monitor with HDMI cable
+- Keyboard and mouse
+- Power supply
+- Optional: USB or Wi-Fi dongle for internet connectivity (if not built-in)
 
+### 2. **Install Raspberry Pi OS**
+You can easily install Raspberry Pi OS using the **Raspberry Pi Imager**. Download it from the official [Raspberry Pi website](https://www.raspberrypi.org/software/). Once installed:
+- Open Raspberry Pi Imager, select **Raspberry Pi OS (32-bit)** from the options.
+- Choose the SD card as the storage medium.
+- Click **Write** to flash the OS onto the card.
 
-### Enable GPIO and I2C
+Once the OS is written, insert the SD card into your Raspberry Pi, connect the monitor, keyboard, and other peripherals, and power it on.
 
-Next, setting up the board for the application. First, enable GPIO and I2C. Create a new user group, and add your user to it (this is the user running the commands).
+### 3. **Initial Setup**
+On the first boot, Raspberry Pi OS will guide you through an initial setup wizard to:
+- Select your language and keyboard layout.
+- Set up Wi-Fi and update the system.
+- Set a new password for your user account.
 
-```
-sudo groupadd -f -r gpio
-sudo usermod -a -G gpio your_user_name
-```
+Ensure your Pi is connected to the internet either via Ethernet or Wi-Fi for future package installations.
 
-Copy `99-gpio.rules` from `/misc/` in the project folder to `/etc/udev/rules.d/` on the Jetson Nano. Then enable the rule.
+### 4. **Display Configuration**
+By default, Raspberry Pi OS should detect and configure the display. However, if the display isn't set up properly:
+- Open the **Raspberry Pi Configuration** tool (found under Preferences).
+- Navigate to the **Display** tab to manually set the resolution.
 
-```
-sudo udevadm control --reload-rules && sudo udevadm trigger
-```
+If you face display issues (e.g., blank screen or incorrect resolution), you may need to edit the `config.txt` file. This file contains settings for HDMI and overscan, found in the `/boot` directory. Open the terminal and run:
 
-Now enable PWM. Run the options file for jetson-GPIO.
-
-```
-sudo /opt/nvidia/jetson-io/jetson-io.py
-```
-
-Go down to "Configure 40-pin expansion header" and enter that submenu. Find `pwm0` and `pwm`, and enable them by selecting them and pressing "Enter". Now exit the tool. GPIO and PWM have been enabled.
-
-You may need to enable permissions for I2C
-
-```
-sudo usermod -a -G i2c your_user_name
-```
-
-### Package Installation
-
-Some packages will need to be installed. [Jetson-GPIO](https://github.com/NVIDIA/jetson-gpio), socket.io-client, [adafruit-servokit](https://github.com/adafruit/Adafruit_CircuitPython_ServoKit), and [adafruit-mpu6050](https://github.com/adafruit/Adafruit_MPU6050) must be installed (Jetson-GPIO may be pre-installed on some versions).
-
-Use the following pip commands:
-
-```
-pip3 install adafruit-circuitpython-servokit
-pip3 install adafruit-mpu6050
-pip3 install "python-socketio[client]"
+```bash
+sudo nano /boot/config.txt
 ```
 
-### Camera Calibration
+Adjust settings like `hdmi_group` and `hdmi_mode` to match your display’s specifications, then reboot the system.
 
-You may encounter pink fringing on the cameras. If that happens, take the following steps to fix it:
+### 5. **Update Your System**
+Before installing any libraries, update your system to ensure compatibility with the latest versions. Open the terminal and run:
 
-Copy `camera_overrides.isp` from `/dist/` in the project folder to `/var/nvidia/nvcam/settings/` on the Jetson Nano.
-
-Give the overrides permissions with the next two:
-
-```
-sudo chmod 664 /var/nvidia/nvcam/settings/camera_overrides.isp
-sudo chown root:root /var /nvidia/nvcam/settings/camera_overrides.isp
+```bash
+sudo apt update
+sudo apt full-upgrade
 ```
 
-Next, calibrate the cameras. If you skip this step, the distortion correction may have error and the program may not function as intended.
+This updates all installed packages and the Raspberry Pi OS itself.
 
-First, you need to run manualdrive and take pictures of a chessboard. Take roughly 10 pictures. Place these pictures in `dist/calibration`, and then run the first cell of `calibrate.ipynb`. The program should print out DIM, K, and D. If there is an error, make sure all the pictures have the full size of the chessboard. Paste these values of DIM, K, and D into the second cell where it says `# Paste matrices here`. Run the second cell to ensure the distortion matrices work. Now you can paste K and D into `converter.py`, at line 25.
+### 6. **Install NumPy**
+NumPy is a fundamental library for numerical computations in Python. To install NumPy, use the following command:
+
+```bash
+sudo apt install python3-numpy
+```
+
+This installs NumPy, allowing you to perform array operations and other numerical computations, which are often essential in robotics and computer vision projects.
+
+### 7. **Install OpenCV (cv2)**
+OpenCV is a popular library used for image and video processing. It's essential for tasks like object detection and tracking in computer vision projects.
+
+First, install the required dependencies:
+
+```bash
+sudo apt install libopencv-dev python3-opencv
+```
+
+To confirm the installation, open a Python session in the terminal:
+
+```bash
+python3
+```
+
+Then import OpenCV:
+
+```python
+import cv2
+```
+
+If no errors appear, OpenCV is successfully installed.
+
+### 8. **Setting Up Automatic Startup (Optional)**
+If you want your project or program to start automatically on boot, you can configure it by adding a script to the autostart file or setting up a cron job.
+
+To add a Python script to autostart, create a desktop entry:
+
+```bash
+nano ~/.config/autostart/myprogram.desktop
+```
+
+Then add the following lines:
+
+```
+[Desktop Entry]
+Name=My Program
+Exec=python3 /path/to/your/script.py
+Type=Application
+```
+
+Save and close the file. This will run the script automatically on boot.
+
+### 9. **Finalizing and Testing**
+After installing the libraries, run a test to ensure everything is working:
+- Test NumPy by running a simple array operation.
+- Test OpenCV by capturing an image from the camera (if available) and displaying it.
+
+You can do this in Python by running:
+
+```python
+import numpy as np
+import cv2
+
+# Test NumPy
+arr = np.array([1, 2, 3])
+print(arr)
+
+# Test OpenCV (Capture an image from the camera)
+cap = cv2.VideoCapture(0)
+ret, frame = cap.read()
+cv2.imshow('Frame', frame)
+cv2.waitKey(0)
+cap.release()
+cv2.destroyAllWindows()
+```
+
+If you see the image on the screen, OpenCV is properly installed and functional. You're now ready to work on projects that involve video processing and numerical operations on your Raspberry Pi!
+
+### Conclusion
+By following these steps, you’ve installed Raspberry Pi OS, configured your display settings, and set up critical libraries like NumPy and OpenCV. This setup is ideal for working on robotics or computer vision projects, as Raspberry Pi combined with Python and OpenCV offers a powerful environment for developing real-time applications. For more details and additional configuration options, you can always refer to [RaspberryTips](https://raspberrytips.com/install-raspberry-pi-os/).
+
