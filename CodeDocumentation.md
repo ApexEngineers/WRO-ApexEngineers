@@ -2,38 +2,12 @@
 ***
 
 # Contents
-* [Algorithm](#algorithm)
-    * [Outline](#general-outline)
-    * [Image Processing](#image-processing)
-    * [Simple Driver](#simple-driver)
-* [Code Structure](#code-structure)
+* [Raspberry Pi](#raspberry-pi)
+* [Arduino](#arduino)
 
 ***
 
-# Algorithm
-
-Our program runs a constant update loop. All controller code can be found in `./Program/Controllers/`, and is divided into three main modules: The `preProcessingController`, which pre-process images; `slam`, which is a modified SLAM (Simultaneous Localization and Mapping) algorithm with limited landmark locations; and `controller`, divided into `slamcontroller`, `basiccontroller`
-
-## General Outline
-* [Arduino]()
-    1. Capture
-    2. [Undistort](#undistorting)
-    3. [Filter](#filtering)
-    4. [Find wall heights](#finding-wall-heights)
-    5. [Find contours](#finding-contours)
-    6. [Find wall lines](#finding-wall-lines)
-    7. [Merge & Convert wall lines and contours](#merge-contours--wall-lines)
-* [Simple Driver](#simple-driver)
-    1. [Find Car Direction](#finding-car-direction)
-    2. [Categorize Walls](#categorizing-walls)
-    3. [Filter Traffic Signals](#filtering-traffic-signals)
-    4. [Calculate Steering](#calculating-steering)
-* SLAM Driver
-    1. Non-functional (but if it works it'll be really cool)
-
-***
-
-### Detailed Explanation of the Python Code (Raspberry Pi)
+### Raspberry Pi
 
 This Python script handles real-time video processing using OpenCV to detect red, green, and pink blocks in a frame captured from a camera. It calculates the distance and angle to the blocks based on their size and position and sends this information to an Arduino for obstacle avoidance and parallel parking.
 
@@ -166,7 +140,6 @@ void parallelParking() {
 - **Pink block detection (via Raspberry Pi):** Once the Pi detects two pink blocks, it sends a "PINK" signal to the Arduino.
 - **Robot Response (Arduino):** The `parallelParking` function would move the robot forward, position it between the blocks, and adjust the steering to park in the available space.
 
-### Improvements & Next Steps:
-1. **Parallel Parking Implementation:** The `parallelParking` function needs a detailed implementation of the turning and parking sequence, likely involving multiple servo adjustments and motor control.
-2. **Tuning:** Fine-tuning parameters such as the turning angles, delay times, and ultrasonic threshold values will be necessary for smooth operation.
+### Fine tuning:
+Fine-tuning parameters such as the turning angles, delay times, and ultrasonic threshold values will be necessary for smooth operation.
 
