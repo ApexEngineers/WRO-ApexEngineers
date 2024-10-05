@@ -1,165 +1,203 @@
-#include <Wire.h>
 #include <Servo.h>
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
 
-// Servo and Motor setup
-Servo steering;
-int motorPin = 9;  // DC motor control pin
-int motorDirPin1 = 3; // Motor direction pin 1
-int motorDirPin2 = 4; // Motor direction pin 2
-int buttonPin = 2; // Start button
-int lap_count = 0;
-bool parking_mode = false;
+// Pin definitions
+#define SERVO_PIN 9
+#define MOTOR_IN1 10
+#define MOTOR_IN2 11
+#define MOTOR_ENA 12
+#define ULTRASONIC_LEFT_TRIGGER 4
+#define ULTRASONIC_LEFT_ECHO 5
+#define ULTRASONIC_RIGHT_TRIGGER 6
+#define ULTRASONIC_RIGHT_ECHO 7
 
-// MPU6050 Setup (for direction and lap counting)
-Adafruit_MPU6050 mpu;
-float initial_heading = 0;
-float current_heading = 0;
-
-// TCS3200 Color Sensor Setup (for detecting blue and orange lines)
-int s2 = 4; // S2 pin of TCS3200
-int s3 = 5; // S3 pin of TCS3200
-int outPin = 6; // Output pin of TCS3200
-
-// Movement variables
-int speed = 150;  // Speed for the DC motor
-
-// Threshold values for color detection
-int thresholdValueForBlue = 200;   // You will need to adjust these values based on your sensor readings
-int thresholdValueForOrange = 100; // Adjust this based on testing
-
-// State variables
-enum State { IDLE, TURN_LEFT_COLOR, TURN_RIGHT_COLOR, TURN_LEFT_OBSTACLE, TURN_RIGHT_OBSTACLE, PARKING };
-State currentState = IDLE;
-
-// Timer variables
-unsigned long previousMillis = 0;
-const long interval = 100; // Interval for sensor readings and actions
+Servo steeringServo;
+int flag = 0;
+bool no_detection_lap = false;
+int x=0;
 
 void setup() {
-  Serial.begin(9600);  // Initialize Serial communication between Arduino and Raspberry Pi
-  Serial.println("Arduino ready.");  // Ready message for Pi
-  
-  // Servo motor setup
-  steering.attach(10);  // Steering servo
-  pinMode(motorPin, OUTPUT);
-  pinMode(motorDirPin1, OUTPUT);
-  pinMode(motorDirPin2, OUTPUT);
-  pinMode(buttonPin, INPUT);
+  Serial.begin(9600);
+  steeringServo.attach(SERVO_PIN);
 
-  // MPU6050 setup
-  if (!mpu.begin()) {
-    Serial.println("Failed to find MPU6050 chip");
-    while (1) {
-      delay(10);
-    }
+  pinMode(MOTOR_IN1, OUTPUT);
+  pinMode(MOTOR_IN2, OUTPUT);
+  pinMode(MOTOR_ENA, OUTPUT);
+
+  pinMode(ULTRASONIC_LEFT_TRIGGER, OUTPUT);
+  pinMode(ULTRASONIC_LEFT_ECHO, INPUT);
+  pinMode(ULTRASONIC_RIGHT_TRIGGER, OUTPUT);
+  pinMode(ULTRASONIC_RIGHT_ECHO, INPUT);
+}
+
+void loop1(){
+  // Check for serial data from Raspberry Pi
+  if (Serial.available()) {
+    String data = Serial.readStringUntil('\n');
+    handleData(data);
   }
-  Serial.println("MPU6050 Found!");
-
-  // Set initial heading (direction) from magnetometer
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  initial_heading = calculateHeading(a);
-
-  // TCS3200 Color sensor setup
-  pinMode(s2, OUTPUT);
-  pinMode(s3, OUTPUT);
-  pinMode(outPin, INPUT);
 }
 
 void loop() {
-  // Lap counting
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  current_heading = calculateHeading(a);
 
-  if (isLapCompleted(current_heading)) {
-    lap_count++;
-    Serial.print("LAP ");
-    Serial.println(lap_count); // Send lap count to Raspberry Pi
+  // If no red or green detected for 1 lap, set no_detection_lap to true
+  if (flag == 4 && x==0) {
+
+    no_detection_lap = true;
   }
 
-  // Parking mode check
-  if (lap_count >= 3 && !parking_mode) {
-    initiateParking();
-    parking_mode = true;
+  // If no detection in 1 lap, skip searching for pink
+  else if (no_detection_lap && flag == 24) {
+    // Do not search for pink
+    stopRobot();
+    return;
   }
 
-  // Example: detect colors and move based on detection
-  String detectedColor = detectColor();
-  if (detectedColor == "BLUE") {
-    turnLeftColor();
-  } else if (detectedColor == "ORANGE") {
-    turnRightColor();
+
+  // Check ultrasonic sensors for distance and move accordingly
+  float leftDistance = getUltrasonicDistance(ULTRASONIC_LEFT_TRIGGER, ULTRASONIC_LEFT_ECHO);
+  float rightDistance = getUltrasonicDistance(ULTRASONIC_RIGHT_TRIGGER, ULTRASONIC_RIGHT_ECHO);
+
+  if (leftDistance > 100) {
+    flag++;
+    turnLeft();
+  } else if (rightDistance > 100) {
+    flag++;
+    turnRight();
+  }
+
+  // If flag == 12 and no detection lap is false, do parallel parking
+  else if (!no_detection_lap && flag == 12) {
+    parallelParking();
+    stopRobot();
+  }
+
+    // If no obstacles detected, move forward
+  else {
+    moveForward();
   }
 }
 
-// Turn Left Function for Color (Blue Detected)
-void turnLeftColor() {
-  steering.write(45);  // Example left turn angle for blue color
-  moveForward(10.0);   // Move forward a short distance
-}
-
-// Turn Right Function for Color (Orange Detected)
-void turnRightColor() {
-  steering.write(135);  // Example right turn angle for orange color
-  moveForward(10.0);    // Move forward a short distance
-}
-
-// Detect Color using TCS3200 Color Sensor
-String detectColor() {
-  int redValue = readColorSensor(); // Read the color sensor values
-  if (redValue > thresholdValueForBlue) {
-    return "BLUE";
-  } else if (redValue < thresholdValueForOrange) {
-    return "ORANGE";
+// Handle data received from Raspberry Pi
+void handleData(String data) {
+  if (data.startsWith("RED")) {
+    // Parse the distance and angle for red block
+    float distance = data.substring(4, data.indexOf(',')).toFloat();
+    float angle = data.substring(data.indexOf(',') + 1).toFloat();
+    moveRight(angle, distance);
+    x=x+1;
+  } else if (data.startsWith("GREEN")) {
+    // Parse the distance and angle for green block
+    float distance = data.substring(6, data.indexOf(',')).toFloat();
+    float angle = data.substring(data.indexOf(',') + 1).toFloat();
+    moveLeft(angle, distance);
+    x=x+1;
+  } else if (data.startsWith("PINK")) {
+    // Parse the distance and angle for pink block
+    float distance = data.substring(5, data.indexOf(',')).toFloat();
+    float angle = data.substring(data.indexOf(',') + 1).toFloat();
+    parallelParking();
   }
-  return "NONE";
 }
 
-// Read the color sensor and return color intensity
-int readColorSensor() {
-  // Set S2 and S3 for blue color detection
-  digitalWrite(s2, LOW);
-  digitalWrite(s3, LOW);
-  delay(100);
-  int blue = pulseIn(outPin, HIGH); // Measure blue color intensity
-
-  // Set S2 and S3 for orange color detection
-  digitalWrite(s2, HIGH);
-  digitalWrite(s3, HIGH);
-  delay(100);
-  int orange = pulseIn(outPin, HIGH); // Measure orange color intensity
-
-  // Return the higher value between blue and orange for comparison
-  return (blue > orange) ? blue : orange;
+// Robot movement functions
+void moveForward() {
+  Serial.println("Move forward");
+  digitalWrite(MOTOR_IN1, HIGH);
+  digitalWrite(MOTOR_IN2, LOW);
+  analogWrite(MOTOR_ENA, 255); // Full speed
+  //delay if not working
 }
 
-// Move forward function
-void moveForward(float distance) {
-  // Set motor direction and speed for forward movement
-  digitalWrite(motorDirPin1, HIGH);
-  digitalWrite(motorDirPin2, LOW);
-  analogWrite(motorPin, speed);
+void turnLeft() {
+  Serial.println("Turn left") ;
+  steeringServo.write(135); // Turn left
+  delay(150);
+  digitalWrite(MOTOR_IN1, HIGH);
+  digitalWrite(MOTOR_IN2, LOW);
+  analogWrite(MOTOR_ENA, 200); // slower speed
+  delay(400); //adjust this   --- > for perfect 90 
+  steeringServo.write(90); // Straighten up
+  delay(150);
+  analogWrite(MOTOR_ENA, 0); // Stop motor
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);
+  flag++;
 }
 
-// Function to calculate heading using MPU6050
-float calculateHeading(sensors_event_t &a) {
-  // Implement heading calculation based on accelerometer data
-  return atan2(a.acceleration.y, a.acceleration.x) * 180 / PI;
+void turnRight() {
+  Serial.println("Turn right") ;
+  steeringServo.write(45); // Turn right
+  delay(150);
+  digitalWrite(MOTOR_IN1, HIGH);
+  digitalWrite(MOTOR_IN2, LOW);
+  analogWrite(MOTOR_ENA, 200); // slower speed
+  delay(150); // adjust this  ---> for perfect turn
+  steeringServo.write(90); // Straighten up
+  delay(150);
+  analogWrite(MOTOR_ENA, 0); // Stop motor
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);
+  flag++;
 }
 
-// Lap completion check based on heading
-bool isLapCompleted(float current_heading) {
-  return abs(current_heading - initial_heading) >= 360;  // Adjust this condition based on your environment
+
+void moveRight(int angle, int distance) {
+  // Adjust movement based on received angle/distance
+  Serial.println("RED") ;
+  steeringServo.write(angle+15); // Turn right
+  delay(150);
+  digitalWrite(MOTOR_IN1, HIGH);
+  digitalWrite(MOTOR_IN2, LOW);
+  analogWrite(MOTOR_ENA, 200); // Full speed
+  delay(500); //adjust this 
+  steeringServo.write(180-angle-15); // Straighten up
+  delay(150);
+  analogWrite(MOTOR_ENA, 0); // Stop motor
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);
+  delay(150);
+  moveForward();
 }
 
-// Parking logic
-void initiateParking() {
-  Serial.println("Parking Mode Initiated");
-  steering.write(90);  // Straight position for parking
-  moveForward(5.0);    // Move forward a short distance
-  steering.write(135); // Adjust for parallel parking (right turn)
-  moveForward(3.0);    // Complete parking procedure
+void moveLeft(int angle, int distance) {
+  // Adjust movement based on received angle/distance
+  Serial.println("GREEN") ;
+  steeringServo.write(90-angle+15); // Turn right
+  delay(150);
+  digitalWrite(MOTOR_IN1, HIGH);
+  digitalWrite(MOTOR_IN2, LOW);
+  analogWrite(MOTOR_ENA, 200); // Full speed
+  delay(500); //adjust this 
+  steeringServo.write(angle+15); 
+  delay(150); // Straighten up
+  analogWrite(MOTOR_ENA, 0); // Stop motor
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);
+  delay(150);
+  moveForward();
+}
+
+float getUltrasonicDistance(int triggerPin, int echoPin) {
+  digitalWrite(triggerPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(triggerPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(triggerPin, LOW);
+
+  long duration = pulseIn(echoPin, HIGH);
+  float distance = duration * 0.034 / 2;
+  return distance;
+}
+
+void parallelParking() {
+  Serial.println("Parking");
+
+}
+
+void stopRobot() {
+  Serial.println("Robot stopped") ;
+  analogWrite(MOTOR_ENA, 0); // Stop motor
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);
+  delay(100000);
 }
