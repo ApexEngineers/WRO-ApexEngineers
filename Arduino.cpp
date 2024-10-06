@@ -190,6 +190,29 @@ float getUltrasonicDistance(int triggerPin, int echoPin) {
 
 void parallelParking() {
   Serial.println("Parking");
+    parkingInitiated = true;  // Set parking flag
+
+  int initialAngle = 90;  // Center position for the servo
+  steeringServo.write(initialAngle);  // Reset to straight
+
+  // Move backward slightly to create space
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, HIGH);  // Reverse the motors
+  analogWrite(MOTOR_ENA, motorSpeed);
+  delay(1000);  // Move back for 1 second
+
+  // Turn the robot towards the parking space
+  steeringServo.write(45);  // Adjust this angle based on parking space
+  delay(500);  // Wait for half a second
+
+  // Move forward into the parking space
+  moveForward();  // Call the moveForward function
+  delay(1000);  // Move forward for 1 second
+
+  // Straighten the robot
+  steeringServo.write(initialAngle);  // Reset servo back to straight
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, LOW);  // Stop the motors
 
 }
 
