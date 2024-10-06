@@ -53,12 +53,6 @@ Here is a simple schematic for how the electronics are wired:
 
 ![image](https://github.com/user-attachments/assets/723035cc-10ee-4c7d-9646-833954e1d946)
 
-## Photos of the Robot
-|                                |                                  |
-| ------------------------------ | -------------------------------- |
-| ![front](./Vehicle%20Photos/front.jpg) | ![back](./Vehicle%20Photos/back.jpg)     |
-| ![left](./Vehicle%20Photos/left.jpg)   | ![right](./Vehicle%20Photos/right.jpg)   |
-| ![top](./Vehicle%20Photos/top.jpg)     | ![bottom](./Vehicle%20Photos/bottom.jpg) |
 
 ***
 #  The Team 
