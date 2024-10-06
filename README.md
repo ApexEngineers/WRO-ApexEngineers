@@ -62,7 +62,7 @@ Here is a simple schematic for how the electronics are wired:
  Our team is made up of talented young individuals with diverse interests and achievements. We are a collaborative and determined team, eager to inspire others with our journey.
  
  ## Coach - Aditya Vynatheya
- Aditya Vynatheya, aged 26, inspires studnets through hands-on learning in robotics and woodworking. With a passion for creativity and innovation, he fosters teamwork and problem-solving skills. He belives in empowering young minds to build, desing and explore. He also transforms ideas into reality while intalling confidence and a love for tecnology and robotics into students.
+ Aditya Vynatheya, aged 26, inspires students through hands-on learning in robotics and woodworking. With a passion for creativity and innovation, he fosters teamwork and problem-solving skills. He belives in empowering young minds to build, design and explore. He also transforms ideas into reality while intalling confidence and a love for tecnology and robotics into students.
     
  ## Abhiram Alluri 
 Abhiram Alluri, aged 16, is a passionate individual who loves cricket, software, and physics. He recently did an internship at IIIT under Anuradha Ma’am, where he learned about technology. Abhiram has achieved remarkable success. In 2022, he won first place in the Pravaha Hackathon, beating participants from Russia. He also excelled in robotics, winning the Connect Award at FTC 2024 and earning a chance to represent his team in Australia.
