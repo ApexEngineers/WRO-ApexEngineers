@@ -28,6 +28,7 @@ Below is a more-or-less detailed step-by-step guide to recreate ApexBot.
 * 2x [HC SR04 - Ultrasonic Sensor](https://www.agarwalelectronics.com/product/hc-sr04-ultrasonic-sensor-4pin/)
 * 2x [64GB SD Card](https://www.amazon.in/s?k=64gb+sd+card%27&adgrpid=1326012629748396&hvadid=82876047563782&hvbmt=be&hvdev=c&hvlocphy=156979&hvnetw=o&hvqmt=e&hvtargid=kwd-82876677182464%3Aloc-90&hydadcr=24350_1971234&tag=msndeskstdin-21&ref=pd_sl_r3hr79sdn_e)
 * 4x [65mm Rubber](https://www.agarwalelectronics.com/product/bo-wheel-imported/)
+* 12 v 4200 mah battery
 * 20-24 gauge wire
 * M3 nylon screws (6mm)
 * M3 nylon standoffs (6mm works best)
