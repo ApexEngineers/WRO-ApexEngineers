@@ -62,18 +62,31 @@ Here is a simple schematic for how the electronics are wired:
 
 ***
 #  The Team 
+
+
  Our team is made up of talented young individuals with diverse interests and achievements. We are a collaborative and determined team, eager to inspire others with our journey.
  
  ## Coach - Aditya Vynatheya
+
+ 
  Aditya Vynatheya, aged 26, inspires students through hands-on learning in robotics and woodworking. With a passion for creativity and innovation, he fosters teamwork and problem-solving skills. He belives in empowering young minds to build, design and explore. He also transforms ideas into reality while intalling confidence and a love for tecnology and robotics into students.
     
  ## Abhiram Alluri 
+
+ ![PXL_20240919_062103840 MP](https://github.com/user-attachments/assets/92a39841-3518-4caa-919d-0cf6cdbf5427)
+
 Abhiram Alluri, aged 16, is a passionate individual who loves cricket, software, and physics. He recently did an internship at IIIT under Anuradha Ma’am, where he learned about technology. Abhiram has achieved remarkable success. In 2022, he won first place in the Pravaha Hackathon, beating participants from Russia. He also excelled in robotics, winning the Connect Award at FTC 2024 and earning a chance to represent his team in Australia.
 
  ## Akhila Alluri
+
+ ![PXL_20240919_062045377 MP (1)](https://github.com/user-attachments/assets/a43ae593-0bc9-4893-aade-b4c772532004)
+
  Akhila Alluri, aged 14, is interested in languages, hardware, and table tennis. She has achieved success both in sports and technology. Akhila placed second in a team table tennis competition at the state level. She also came in second in the FLL (First Lego League) competition in South India, demonstrating her skills in robotics. Akhila´s curiosity extends to languages and hardware as well.
 
  ## Mehaan Jain
+
+ ![PXL_20240919_062036273 MP](https://github.com/user-attachments/assets/09049ee9-b273-4327-8ea1-b5e25afa5f0f)
+
  Mehaan Jain, aged 15, is a versatile team member who enjoys basketball and electronics. He interned at IIIT Hyderabad in the field of advanced technology. During 2023, Mehaan stood first in the IIIT Hackathon, showing off his innovative skills. He also completed an internship at T-Hub with Akshay Deshpande, founder of SwitchEko. Mehaan´s story was even featured in a book called "Airavata," highlighting his dedication. He is active in the Robotics Club at Chirec International School
 
 PHOTOS 
