@@ -29,14 +29,6 @@ void setup() {
   pinMode(ULTRASONIC_RIGHT_ECHO, INPUT);
 }
 
-void loop1(){
-  // Check for serial data from Raspberry Pi
-  if (Serial.available()) {
-    String data = Serial.readStringUntil('\n');
-    handleData(data);
-  }
-}
-
 void loop() {
 
   // If no red or green detected for 1 lap, set no_detection_lap to true
@@ -74,6 +66,13 @@ void loop() {
     // If no obstacles detected, move forward
   else {
     moveForward();
+  }
+
+
+  // Check for serial data from Raspberry Pi
+  if (Serial.available()) {
+    String data = Serial.readStringUntil('\n');
+    handleData(data);
   }
 }
 
