@@ -12,6 +12,9 @@
     * [Programming Language](#programming-language)
     * [Code Documentation](#code-documentation)
 * [Demonstrations](#demonstration-video)
+* [Mobility Management](mobility-management)
+* [Obstacle Management](obstacle-management)
+* [Power Sense Management](#power-sense-management)
 * [LiPo Battery Safety Notice](#lipo-battery-safety-notice)
 
 
@@ -105,6 +108,101 @@ The project utilizes two primary programming languages:
 Make sure all dependencies are installed correctly for the system to function seamlessly.
 
 # Demonstration Video
+
+# Mobility Management
+
+**Mobility management** is crucial in enabling the robot to move efficiently and respond to environmental changes. The robot's mobility system typically involves **steering**, **driving**, and **speed control**. Here's how these components interact in your project:
+
+#### 1. **DC Motor for Movement**:
+- The **DC motor** controls the forward and backward movement of the robot. It is connected to a **motor driver** (likely an H-Bridge) that controls the direction and speed via **PWM (Pulse Width Modulation)**. 
+  - **Direction control** is managed by setting the logic for the motor’s IN1 and IN2 pins. 
+    - When IN1 = HIGH and IN2 = LOW, the motor rotates forward.
+    - When IN1 = LOW and IN2 = HIGH, the motor rotates backward.
+  - **Speed control** is achieved by varying the duty cycle of the PWM signal sent to the ENA pin. A higher duty cycle results in faster movement.
+
+#### 2. **Servo Motor for Steering**:
+- **Servo motor** is responsible for **steering** the robot. It adjusts the wheels to turn the robot left, right, or keep it moving straight.
+  - The servo angle is controlled using the `Servo` library, where:
+    - **90°** represents a straight position.
+    - **135°** or higher represents a left turn.
+    - **45°** or lower represents a right turn.
+
+#### 3. **Turning Logic**:
+- **Turning** is handled by controlling the servo motor while the DC motor is running.
+  - To **turn left**:
+    - The servo motor turns to an angle greater than 90° (e.g., 135°), and the DC motor continues to run at a lower speed for smooth turning.
+  - To **turn right**:
+    - The servo motor turns to an angle less than 90° (e.g., 45°), with a similar speed adjustment.
+  - After a turn, the servo motor is reset to **90°** (straight), and the motor resumes full-speed movement.
+
+#### 4. **Motion Adjustments**:
+- Speed can be adjusted dynamically based on environmental conditions, such as detecting obstacles (discussed below) or when precision is required (e.g., during parallel parking).
+
+# Obstacle Management
+
+**Obstacle management** ensures the robot avoids collisions and navigates around obstacles it encounters in its path. Your robot uses a combination of **ultrasonic sensors** and **camera-based color detection** to detect and react to obstacles.
+
+#### 1. **Ultrasonic Sensors for Obstacle Avoidance**:
+- **Ultrasonic sensors** are used on both the left and right sides of the robot. They emit sound waves and calculate the distance to an obstacle based on how long the signal takes to return.
+  - When the sensor detects an object within a certain threshold distance (e.g., 20-30 cm), the robot decides to turn in the opposite direction to avoid it.
+  - **Left-side detection**: If the left ultrasonic sensor detects an obstacle within a set range (e.g., 20 cm), the robot will turn **right**.
+  - **Right-side detection**: Similarly, if the right ultrasonic sensor detects an obstacle, the robot will turn **left**.
+  
+The obstacle detection process is handled via the following logic:
+- **Distance Measurement**: The ultrasonic sensor calculates the distance to an obstacle:
+  ```cpp
+  float distance = duration * 0.034 / 2;
+  ```
+  - **0.034** is the speed of sound in cm/μs, and dividing by 2 accounts for the round-trip distance.
+  
+- **Decision-Making**:
+  - If the distance is below a certain threshold (e.g., 20 cm), the robot will turn left or right accordingly.
+
+#### 2. **Color-Based Obstacle Detection Using Camera**:
+- In addition to ultrasonic sensors, **camera-based detection** via OpenCV identifies colored blocks (red, green, and pink) in the robot's path.
+  - **Red and Green Blocks**: These indicate obstacles the robot must avoid.
+    - When a **red block** is detected within 40 cm, the robot will turn **right**.
+    - When a **green block** is detected, the robot will turn **left**.
+  - The **distance to blocks** is calculated using the **height of the block in the camera's frame** and the known height of the block (10 cm in this case). The formula for calculating distance is:
+    ```python
+    def calculate_distance(pixel_height):
+        return (BLOCK_HEIGHT_CM * FOCAL_LENGTH) / pixel_height
+    ```
+    - Here, the focal length is pre-calibrated, and the pixel height is the size of the block in the camera’s field of view.
+
+#### 3. **Handling Multiple Obstacles**:
+- If **multiple obstacles** are detected (e.g., more than one block), the robot processes the **nearest block** first and turns accordingly, ensuring it avoids each obstacle sequentially.
+
+
+***
+
+# Power Sense Management
+
+**Power sense management** refers to the robot's ability to handle power distribution, monitor power consumption, and ensure all components have the required energy to operate effectively. It involves managing power between the motors, sensors, and the microcontroller (Arduino or Raspberry Pi). Key aspects of power management include:
+
+#### 1. **Battery Management**:
+- The robot is likely powered by multiple batteries:
+  - **One battery for the motors**: Motors typically require more power, so a dedicated battery ensures they receive consistent voltage without interference from other components.
+  - **One battery for the SBC (Single Board Computer) and SBM (Single Board Microcontroller)**: This battery powers the Raspberry Pi and Arduino, ensuring reliable data processing and communication.
+  
+#### 2. **Power Distribution**:
+- A **switch** is used to connect or disconnect the power to the robot’s components.
+  - When the switch is turned on, the batteries supply power to all consumers, including the DC motors, servo motor, sensors, and microcontrollers.
+  
+#### 3. **Voltage Regulation**:
+- **Voltage regulators** ensure that components receive the appropriate voltage. Motors and servo motors may require a higher voltage (e.g., 12V), while microcontrollers (e.g., Arduino) need 5V logic.
+- Voltage regulation also protects the robot from **power surges** that could damage sensitive components like sensors and microcontrollers. we have used a motor driver for this. 
+
+#### 4. **Motor Power Management**:
+- The DC motor's **speed and torque** are controlled via **PWM signals** sent from the Arduino. The `analogWrite()` function adjusts the duty cycle of the PWM to control motor speed:
+  ```cpp
+  analogWrite(MOTOR_ENA, 255);  // Full speed
+  analogWrite(MOTOR_ENA, 200);  // Reduced speed for turning
+  analogWrite(MOTOR_ENA, 0);    // Stop the motor
+  ```
+  - By adjusting the PWM values, the robot can **conserve power** during turns or slow maneuvers, reducing overall power consumption.
+
+
 
 # LiPo Battery Safety Notice
 LiPo (Lithium Polymer) batteries are widely used in robotics projects due to their high energy density and relatively low cost. However, they require careful handling to avoid dangerous situations, such as fires. Here are some essential precautions to follow when handling LiPo batteries:
